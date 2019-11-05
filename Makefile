@@ -1,6 +1,9 @@
 
-all: bin/main.o bin/CSV_Parser.o
-	gcc -o "bin/main" "bin/main.o" "bin/CSV_Parser.o" && "bin/main.exe"
+all: bin/ bin/main.o bin/CSV_Parser.o
+	gcc -o "bin/main" "bin/main.o" "bin/CSV_Parser.o"
+
+bin/ : bin/
+	IF NOT EXIST "bin" mkdir bin
 
 bin/main.o: src/main.c
 	gcc -c "src/main.c" -o bin/main.o

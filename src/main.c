@@ -15,35 +15,31 @@ Matrix matrix;
 Matrix cache;
 
 //this variable will store the value of optimal path
-int *path;
 
 int main(){
     //char *url = (char*)malloc(1000);
     //printf("file URL : ");
     //scanf("%s",url);
     char url[] = "test.csv";
-    //free(url);
+    
     //------------ Parse CSV File ---------------
     FILE *file ;
     if ( (file = fopen(url,"r") ) == NULL){
         perror("File");
         exit(EXIT_FAILURE);
     }
+    printf("## DATA Loaded ##\n");
     matrix = getMatrix(file);
     fclose(file);
 
-    printf("## DATA Loaded ##\n");
 
     cache = createMatrix(matrix->activities,matrix->ressource+1);
-    path = (int*)calloc(matrix->activities,sizeof(int));
-
     int optimal = maximizeProfit(matrix->activities, matrix->ressource);
 
     printf("Optimal value :  %d \n",optimal);
-    showPath(path);
     freeMatrix(matrix);
     freeMatrix(cache);
-    free(path);
+    //free(url);
     //---------------------------------------
     return 0;
 }

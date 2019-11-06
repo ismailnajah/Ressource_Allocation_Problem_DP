@@ -1,9 +1,8 @@
-
 all: bin/ bin/main.o bin/CSV_Parser.o
 	gcc -o "bin/main" "bin/main.o" "bin/CSV_Parser.o"
 
 bin/ : bin/
-	IF NOT EXIST "bin" mkdir bin
+	[ -d bin ] || mkdir -p bin
 
 bin/main.o: src/main.c
 	gcc -c "src/main.c" -o bin/main.o

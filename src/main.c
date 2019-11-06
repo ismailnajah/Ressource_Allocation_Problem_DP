@@ -4,7 +4,11 @@
 #include <stdbool.h>
 #include <errno.h>
 #include "CSV_Parser.h"
- 
+
+
+#define URL_DEFAULT "test.csv"
+
+
 /*
 **  dyn_max() takes activity + ressource + global variable Matrix matrix 
 **  and returns the optimal value for activity machine given a part of the ressource
@@ -12,18 +16,21 @@
 int dyn_max(Matrix r,Matrix cache,int activity,int ressource);
 int maximize_profite(Matrix r);
 
-int main(){
-    
-    char url[] = "test.csv";
-    
-    //------------ Parse CSV File ---------------
+int main(int argc, char* argv[]){
+    // Configuring the input file
+    char *url=(argc==2)? argv[1] : URL_DEFAULT ;
+
+    // Opening The input file
     FILE *file ;
-    if ( (file = fopen(url,"r") ) == NULL){
+    if ( (file = fopen(url, "r") ) == NULL){
         perror("File");
         exit(EXIT_FAILURE);
-    }
-    Matrix r = getMatrix(file);
-    fclose(file);
+
+    }//~ 
+    
+    // Loading the input table into the r(i, j) matrix
+    Matrix r = getMatrix(file);  fclose(file);
+    
     printf("## DATA Loaded ##\n");
     //---------------------------------------
     
@@ -34,11 +41,7 @@ int main(){
     freeMatrix(r);
 
     return 0;
-}
-
-
-
-
+}//~ main()
 
 int dyn_max(Matrix r,Matrix cache,int activity,int ressource){
     if(activity==1){
@@ -62,7 +65,6 @@ int dyn_max(Matrix r,Matrix cache,int activity,int ressource){
     cache->values[activity-1][ressource] = optimal;
     return optimal;
 }
-
 
 int maximize_profite(Matrix r){
     //A 2D array that memorized optimal values, cache[activity][ressource] = f*(activity, ressource)

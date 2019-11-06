@@ -5,14 +5,13 @@
 #include <errno.h>
 #include "CSV_Parser.h"
 
-Matrix matrix;
-/*
-**  this matrix memorizes the optimal value
-**  foreach (activity,ressource) to avoid repetitive calculation 
-*/
+
+#define URL_DEFAULT "test.csv"
+
+//  r[m][n], contains the gains r(i,j)>=0 for each machine 'm' for each ressources 'n' 
+Matrix r;
 //  A 2D matrix that memorized optimal values, cache[machine][unity] = f*(machine, unity) 
 Matrix cache;               
-//this variable will store the value of the optimal path
 
 
 /*
@@ -26,35 +25,32 @@ void showPath(int *path);
 int maximizeProfit(int activity,int ressource);
 
 
-int main(){
-    
-    char url[] = "test.csv";
-    
-    //------------ Parse CSV File ---------------
+int main(int argc, char* argv[]){
+    // Configuring the input file
+    char *url=(argc==2)? argv[1] : URL_DEFAULT ;
+
+    // Opening The input file
     FILE *file ;
-    if ( (file = fopen(url,"r") ) == NULL){
+    if ( (file = fopen(url, "r") ) == NULL){
         perror("File");
         exit(EXIT_FAILURE);
-    }
-    //---------------------------------------
+    }//~ 
     
-    matrix = getMatrix(file);
-    fclose(file);
-    printf("## DATA Loaded ##\n");
-
-
-    cache = createMatrix(matrix->activities,matrix->ressource+1);
-    int optimal = maximizeProfit(matrix->activities, matrix->ressource);
+    // Loading the input table into the r(i, j) matrix
+    r = getMatrix(file);    fclose(file);
+    
+    cache = createMatrix(r->activities,r->ressource+1);
+    int optimal = maximizeProfit(r->activities, r->ressource);
 
     printf("Optimal value :  %d \n",optimal);
-    freeMatrix(matrix);
+    freeMatrix(r);
     freeMatrix(cache);
     return 0;
-}
+}//~ main()
 
 int maximizeProfit(int activity,int ressource){
     if(activity==1){
-        return matrix->values[activity-1][ressource];
+        return r->values[activity-1][ressource];
     }
     
     int optimal=0;
@@ -65,7 +61,7 @@ int maximizeProfit(int activity,int ressource){
             value = cache->values[activity-1][i]; 
         }else{
             // calculate the value 
-            value =  matrix->values[activity-1][i] + maximizeProfit(activity-1,ressource-i);
+            value =  r->values[activity-1][i] + maximizeProfit(activity-1,ressource-i);
         }
         if(optimal<value){
             optimal = value;
@@ -76,7 +72,7 @@ int maximizeProfit(int activity,int ressource){
 }
 
 void showPath(int *path){
-    for(int i=0;i<matrix->activities;i++){
+    for(int i=0;i<r->activities;i++){
         printf(" %d ",path[i]);
     }
     printf("\n");

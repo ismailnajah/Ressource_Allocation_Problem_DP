@@ -14,12 +14,9 @@ Matrix matrix;
  foreach (activity,ressource) to avoid repetitive calculation 
 Matrix cache;
 
-//this variable will store the value of optimal path
 
 int main(){
-    //char *url = (char*)malloc(1000);
-    //printf("file URL : ");
-    //scanf("%s",url);
+    
     char url[] = "test.csv";
     
     //------------ Parse CSV File ---------------
@@ -28,9 +25,11 @@ int main(){
         perror("File");
         exit(EXIT_FAILURE);
     }
-    printf("## DATA Loaded ##\n");
+    //---------------------------------------
+    
     matrix = getMatrix(file);
     fclose(file);
+    printf("## DATA Loaded ##\n");
 
 
     cache = createMatrix(matrix->activities,matrix->ressource+1);
@@ -39,8 +38,6 @@ int main(){
     printf("Optimal value :  %d \n",optimal);
     freeMatrix(matrix);
     freeMatrix(cache);
-    //free(url);
-    //---------------------------------------
     return 0;
 }
 
@@ -72,5 +69,5 @@ void showPath(int *path){
         printf(" %d ",path[i]);
     }
     printf("\n");
-    
+
 }

@@ -8,7 +8,7 @@
 
 Matrix createMatrix(int N,int M){
     Matrix matrix = (Matrix)malloc(sizeof(struct Matrix));
-    if(matrix->values==NULL){
+    if(matrix==NULL){
         perror("Matrix");
         exit(EXIT_FAILURE);
     }

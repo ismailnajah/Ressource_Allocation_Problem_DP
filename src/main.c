@@ -4,27 +4,13 @@
 #include <stdbool.h>
 #include <errno.h>
 #include "CSV_Parser.h"
-
-Matrix matrix;
+ 
 /*
-**  this matrix memorizes the optimal value
-**  foreach (activity,ressource) to avoid repetitive calculation 
-*/
-//  A 2D matrix that memorized optimal values, cache[machine][unity] = f*(machine, unity) 
-Matrix cache;               
-//this variable will store the value of the optimal path
-
-
-/*
-**  TODO
-*/
-void showPath(int *path);
-/*
-**  just like dyn_max() in python, takes activity + ressource + global variable Matrix matrix 
+**  dyn_max() takes activity + ressource + global variable Matrix matrix 
 **  and returns the optimal value for activity machine given a part of the ressource
 */
-int maximizeProfit(int activity,int ressource);
-
+int dyn_max(Matrix r,Matrix cache,int activity,int ressource);
+int maximize_profite(Matrix r);
 
 int main(){
     
@@ -36,25 +22,27 @@ int main(){
         perror("File");
         exit(EXIT_FAILURE);
     }
-    //---------------------------------------
-    
-    matrix = getMatrix(file);
+    Matrix r = getMatrix(file);
     fclose(file);
     printf("## DATA Loaded ##\n");
+    //---------------------------------------
+    
+    int optimal = maximize_profite(r);
 
-
-    cache = createMatrix(matrix->activities,matrix->ressource+1);
-    int optimal = maximizeProfit(matrix->activities, matrix->ressource);
 
     printf("Optimal value :  %d \n",optimal);
-    freeMatrix(matrix);
-    freeMatrix(cache);
+    freeMatrix(r);
+
     return 0;
 }
 
-int maximizeProfit(int activity,int ressource){
+
+
+
+
+int dyn_max(Matrix r,Matrix cache,int activity,int ressource){
     if(activity==1){
-        return matrix->values[activity-1][ressource];
+        return r->values[activity-1][ressource];
     }
     
     int optimal=0;
@@ -65,7 +53,7 @@ int maximizeProfit(int activity,int ressource){
             value = cache->values[activity-1][i]; 
         }else{
             // calculate the value 
-            value =  matrix->values[activity-1][i] + maximizeProfit(activity-1,ressource-i);
+            value =  r->values[activity-1][i] + dyn_max(r,cache,activity-1,ressource-i);
         }
         if(optimal<value){
             optimal = value;
@@ -75,10 +63,12 @@ int maximizeProfit(int activity,int ressource){
     return optimal;
 }
 
-void showPath(int *path){
-    for(int i=0;i<matrix->activities;i++){
-        printf(" %d ",path[i]);
-    }
-    printf("\n");
 
+int maximize_profite(Matrix r){
+    //A 2D array that memorized optimal values, cache[activity][ressource] = f*(activity, ressource)
+    Matrix cache = createMatrix(r->activities,r->ressource+1);
+    int profit = dyn_max(r,cache,r->activities, r->ressource);
+    freeMatrix(cache);
+    return profit;
 }
+

@@ -1,25 +1,35 @@
-with open('test_p.csv', 'r') as f:
+with open('inpt.csv', 'r') as f:
+    # reading a csv file into r[Machines][unites] -> values of reward
     r = []
     for i in f:
         r.append(   list(  map( int, i.split(',') )  )   )
 
+    # cache is a dictionary for memorizing optimal solutions
     cache = {}
-    total = 0
-    def dyn_max(n, machine=1):
-        global total
-        total+=1
+    optimalPolicies = []
+    def dyn_max(n: int, machine:int=1, path=[], optimal=False) -> int: 
         if machine == len(r):
+            if optimal:
+                path += [n]
+                if sum ( [r[m][i] for m, i in enumerate(path) ]) == optimal:
+                    optimalPolicies.append( path )
             return r[machine - 1][n]
 
-        l = []
-        for i in range(n+1):
-            if cache.get( (machine, i), False ):
-                l.append(cache[(machine, i)])
+        listToMaximaze = []
+        for unite in range(n+1):
+            if cache.get( (machine, unite), False ):
+                listToMaximaze.append(cache[(machine, unite)])
             else :
-                l.append( r[machine - 1][i] + dyn_max(n-i, machine + 1) )
+                listToMaximaze.append(  r[machine - 1][unite] + dyn_max(n-unite, machine + 1
+                                        , path+[unite], optimal=optimal) 
+                                     )
 
-        cache[(machine, i)] = max(l)
-        return cache[(machine, i)]
+        cache[(machine, unite)] = max(listToMaximaze)
+        return cache[(machine, unite)]
 
-    print(dyn_max(10))
-    print(total)
+    print(dyn_max(len(r[0]) - 1, optimal=128))
+    print(optimalPolicies)
+    print('\n'.join(map(repr, optimalPolicies)))
+
+#optimal solution (machine, unite) ((1, 3), (2, 3), (3, 0), (4, 4))
+

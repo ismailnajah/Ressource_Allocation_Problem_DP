@@ -5,14 +5,25 @@
 #include <errno.h>
 #include "CSV_Parser.h"
 
-void showPath(int *path);
-int maximizeProfit(int activity,int ressource);
-
 Matrix matrix;
+/*
+**  this matrix memorizes the optimal value
+**  foreach (activity,ressource) to avoid repetitive calculation 
+*/
+//  A 2D matrix that memorized optimal values, cache[machine][unity] = f*(machine, unity) 
+Matrix cache;               
+//this variable will store the value of the optimal path
 
-//this matrix memorizes the optimal value\
- foreach (activity,ressource) to avoid repetitive calculation 
-Matrix cache;
+
+/*
+**  TODO
+*/
+void showPath(int *path);
+/*
+**  just like dyn_max() in python, takes activity + ressource + global variable Matrix matrix 
+**  and returns the optimal value for activity machine given a part of the ressource
+*/
+int maximizeProfit(int activity,int ressource);
 
 
 int main(){

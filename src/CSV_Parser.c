@@ -8,7 +8,7 @@
 
 Matrix createMatrix(int N,int M){
     Matrix matrix = (Matrix)malloc(sizeof(struct Matrix));
-    if(matrix->values==NULL){
+    if(matrix==NULL){
         perror("Matrix");
         exit(EXIT_FAILURE);
     }
@@ -41,11 +41,11 @@ Matrix getMatrix(FILE *file){
         M = atoi(p);
     }
     free(line);
-    //----------------------------------------- \
-    Allocate 2D table with N Rows and M Columns
+    //----------------------------------------- 
+    //Allocate 2D table with N Rows and M Columns
     Matrix matrix = createMatrix(N,M);
-    //-----------------------------------------\
-    Get Matrix values from CSV file
+    //-----------------------------------------
+    //Get Matrix values from CSV file
     int i=0,j;
     while( (line=getLine(file) ) != NULL){
         j=0;

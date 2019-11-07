@@ -4,7 +4,7 @@
 #define H_CSV_PARSER
 
 
-#define CSV_SEP ";"
+#define CSV_SEP ","
 
 struct Matrix{
     int ressource;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "CSV_Parser.h"
 
 
 int main(){
@@ -22,7 +23,7 @@ int main(){
             int r = j==0?j:rand()%100;
             fprintf(file,"%d",r);
             if(j!=m)
-                fprintf(file,";");
+                fprintf(file,CSV_SEP);
             j++;
         }
         fprintf(file,"\n");

@@ -85,11 +85,24 @@ void freeMatrix(Matrix matrix){
 
 // debug
 void showMatrix(Matrix matrix){
-    printf("\n-----------Matrix(%d,%d)------------\n",matrix->activities,matrix->ressource);
+    char s[] = "___|";
+    printf("a\\r|");
+
+    for(int k=0;k<= matrix->ressource;k++)
+        printf("%3d|",k);
+    printf("\n");
+    for(int k=0;k<= matrix->ressource+1;k++)
+        printf("%s",s);
+    printf("\n");
     for(int i=0; i<matrix->activities; i++){
-        for(int j=0; j<matrix->ressource; j++){
-            printf(" %d",matrix->values[i][j]);
+        printf("%3d|",i+1);
+        for(int j=0; j<=matrix->ressource; j++){
+            printf("%3d|",matrix->values[i][j]);
         }
         printf("\n");
+        for(int k=0;k<= matrix->ressource+1;k++)
+            printf("%s",s);
+        printf("\n");
     }
+    printf("\n");
 }

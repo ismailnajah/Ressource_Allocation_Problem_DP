@@ -10,9 +10,16 @@ with open('inpt.csv', 'r') as f:
     def dyn_max(n: int, machine:int=1, path=[], optimal=False) -> int: 
         if machine == len(r):
             if optimal:
-                path += [n]
-                if sum ( [r[m][i] for m, i in enumerate(path) ]) == optimal:
-                    optimalPolicies.append( path )
+                path.append(n)
+                gainForAllDecisions = sum( [r[m][i] for m, i in enumerate(path) ])
+                if optimalPolicies == []:
+                    optimalPolicies.append( (path.copy(), gainForAllDecisions)  )
+                elif optimalPolicies[1] < gainForAllDecisions:
+                    optimalPolicies.clear()
+                    optimalPolicies.append( (path.copy(), gainForAllDecisions ))
+                elif optimalPolicies[1] == gainForAllDecisions:
+                    optimalPolicies.append( (path.copy(), gainForAllDecisions ))
+                path.pop()
             return r[machine - 1][n]
 
         listToMaximaze = []
@@ -20,15 +27,16 @@ with open('inpt.csv', 'r') as f:
             if cache.get( (machine, unite), False ):
                 listToMaximaze.append(cache[(machine, unite)])
             else :
+                path.append(unite)
                 listToMaximaze.append(  r[machine - 1][unite] + dyn_max(n-unite, machine + 1
-                                        , path+[unite], optimal=optimal) 
+                                        , path, optimal=optimal) 
                                      )
+                path.pop()
 
         cache[(machine, unite)] = max(listToMaximaze)
         return cache[(machine, unite)]
 
-    print(dyn_max(len(r[0]) - 1, optimal=128))
-    print(optimalPolicies)
+    print(dyn_max(len(r[0]) - 1, optimal=162))
     print('\n'.join(map(repr, optimalPolicies)))
 
 #optimal solution (machine, unite) ((1, 3), (2, 3), (3, 0), (4, 4))

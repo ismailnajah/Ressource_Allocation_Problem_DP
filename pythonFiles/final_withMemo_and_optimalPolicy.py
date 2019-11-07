@@ -1,6 +1,7 @@
 # reading a csv file into r[Machines][unites] -> values of reward
 r = []
-with open('test.csv', 'r') as f:
+with open('g_test.csv', 'r') as f:
+    f.readline()
     for i in f:
         r.append(   list(  map( int, i.split(',') )  )   )
 
@@ -42,7 +43,7 @@ def dyn_max(n: int, machine:int=1) -> int:
         i += 1
 
     cache[(machine, n)] = listOfOptimals
-    return cache[(machine, n)]
+    return listOfOptimals
 
 d = dyn_max(len(r[0]) - 1)
 print('Optimal value :', d['optimalValue'], '\n' ,

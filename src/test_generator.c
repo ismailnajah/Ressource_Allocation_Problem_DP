@@ -16,11 +16,11 @@ int main(){
     FILE *file = fopen("g_test.csv","w+");
     fprintf(file,"%d;%d\n",n,m);
 
-    int i=1,j=0;
+    int i=1,j=0,x=5;
     while(i<=n){
         j=0;
         while(j<=m){
-            int r = j==0?j:rand()%100;
+            int r = j==0?j:(r+(x+rand()%x));
             fprintf(file,"%d",r);
             if(j!=m)
                 fprintf(file,CSV_SEP);

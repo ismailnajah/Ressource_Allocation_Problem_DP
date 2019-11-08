@@ -43,7 +43,7 @@ Matrix getMatrix(FILE *file){
     free(line);
     //----------------------------------------- 
     //Allocate 2D table with N Rows and M Columns
-    Matrix matrix = createMatrix(N,M);
+    Matrix matrix = createMatrix(N,M+1);
     //-----------------------------------------
     //Get Matrix values from CSV file
     int i=0,j;

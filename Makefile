@@ -1,7 +1,7 @@
 all: bin/ bin/main.o bin/CSV_Parser.o
 	gcc -o "bin/main" "bin/main.o" "bin/CSV_Parser.o" -Wall
 
-bin/ : bin/
+bin/ :
 	[ -d bin ] || mkdir -p bin
 
 bin/main.o: src/main.c

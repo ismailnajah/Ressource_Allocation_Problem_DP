@@ -1,6 +1,6 @@
 # reading a csv file into r[Machines][unites] -> values of reward
 r = []
-with open('sorted.csv', 'r') as f:
+with open('test.csv', 'r') as f:
     f.readline()
     for i in f:
         r.append(   list(  map( int, i.split(',') )  )   )
@@ -26,7 +26,7 @@ def dyn_max(n: int, machine:int=1) -> int:
                         'optimalValue'    : 0, 
                         'optimalPolicies' : []
                      } 
-    i = 0; 
+    i = 0
     temp = None 
     while i <= n:
         if cache.get( (machine+1, n-i), False ) :
@@ -51,7 +51,7 @@ def dyn_max(n: int, machine:int=1) -> int:
 
 d = dyn_max(len(r[0]) - 1)
 print('Optimal value :', d['optimalValue'], '\n' ,
-      '__> Optimal policies :\n', '\n'.join(map(repr, d['optimalPolicies'])),
+      '__> Optimal policies (%d) :\n'%len(d['optimalPolicies']), '\n'.join(map(repr, d['optimalPolicies'])),
       sep=''
 )
 #print('len_cache :', len(cache))

@@ -14,7 +14,7 @@ int main(){
     scanf("%d",&m);
 
     FILE *file = fopen("g_test.csv","w+");
-    fprintf(file,"%d;%d\n",n,m);
+    fprintf(file,"%d%s%d\n",n,CSV_SEP,m);
 
     int i=1,j=0,x=5;
     while(i<=n){

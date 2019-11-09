@@ -75,8 +75,8 @@ char *getLine(FILE *file){
 }
 
 void freeMatrix(Matrix matrix){
-    int i;
-    for(i=0;i<matrix->activities;i++){
+    
+    for(int i=0;i<matrix->activities;i++){
         free(matrix->values[i]);
     }
     free(matrix->values);

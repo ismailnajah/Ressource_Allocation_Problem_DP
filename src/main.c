@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <errno.h>
-#include "CSV_Parser.h"
+#include "dyn_max_withOP.h"
 
 
 #define URL_DEFAULT "test.csv"
@@ -43,10 +38,14 @@ int main(int argc, char* argv[]){
     printf("## DATA Loaded ##\n");
 
     // Find the optimal f* for r 
-    int optimal = maximize_profite(r);    freeMatrix(r);
-    printf("Optimal value :  %d \n",optimal);
-    printf("recursivity :  %d \n",total_f);
-    printf("cache check :  %d \n",total_cache_check);
+    //int optimal = maximize_profite(r);    freeMatrix(r);
+    Result optimal = maximize_profite_withOP(r) ; 
+    printf("Optimal value :  %d \n",optimal->optimalValue);
+    showPolicies(optimal,r->activities);
+
+    freeMatrix(r);
+    //printf("recursivity :  %d \n",total_f);
+    //printf("cache check :  %d \n",total_cache_check);
 
     return 0;
 }//~ main()

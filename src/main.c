@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <errno.h>
 #include "CSV_Parser.h"
+#include "data_structures.h"
 
-
-#define URL_DEFAULT "test.csv"
+#define URL_DEFAULT "inpt.csv"
 
 
 /*
@@ -17,7 +17,7 @@ int maximize_profite(Matrix r);
  *  dyn_max() takes activity + ressource + global variable Matrix matrix 
  *  and returns the optimal value for activity machine given a part of the ressource
  */
-int dyn_max(Matrix r, Matrix cache, int activity, int ressource);
+OPTIMAL* dyn_max(Matrix r, CACHE* cache, int activity, int ressource);
 
 
 /*
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
     // Loading the input table into the r(i, j) matrix
     Matrix r = getMatrix(file);  fclose(file);
     printf("## DATA Loaded ##\n");
-
+    
     // Find the optimal f* for r 
     int optimal = maximize_profite(r);    freeMatrix(r);
     printf("Optimal value :  %d \n",optimal);
@@ -54,42 +54,46 @@ int main(int argc, char* argv[]){
 
 int maximize_profite(Matrix r){
     //A 2D array that memorized optimal values, cache[activity][ressource] = f*(activity, ressource)
-    Matrix cache = createMatrix(r->activities,r->ressource+1);
-    for(int i=0; i < r->activities; ++i) {
-        for(int j=0; j <= r->ressource; ++j) {
-            cache->values[i][j] = -1;
-        }
-    }
-    int profit = dyn_max(r,cache, 1, r->ressource);
-    freeMatrix(cache);
-    return profit;
+    CACHE* cache = create_cache(r->activities,r->ressource);
+    OPTIMAL* profit = dyn_max(r,cache, 1, r->ressource);
+    print_optimals_policies(profit);
+    int x = profit->optimal_value;
+    free_cache(cache);
+    return x;
 }
 
-int dyn_max(Matrix r,Matrix cache,int activity,int ressource){
-
+OPTIMAL* dyn_max(Matrix r,CACHE* cache,int activity,int ressource){
+    // TODO to delete this global variable counter  
     total_f++;
     if(activity == r->activities){
-        cache->values[activity-1][ressource] = r->values[activity-1][ressource];
-        return r->values[activity-1][ressource];
+        OPTIMAL* temp = create_optimal();
+        extend_optimal_policies(temp, ressource, NULL);
+        temp->optimal_value = r->values[activity-1][ressource];
+        cache->optimals[activity-1][ressource] = temp;
+        return temp;
     }
     
-    int optimal=0;
-    int temp;
+    OPTIMAL* optimal=create_optimal();
+    OPTIMAL* temp=NULL;
     for(int i=0 ; i<=ressource ; i++) {
-        if ( cache->values[activity][ressource-i] != -1  ){
+        if ( cache->optimals[activity][ressource-i] != NULL  ){
             // TODO DELETE THIS 
             total_cache_check++;
             // the value already calculated
-            temp = cache->values[activity][ressource-i]; 
+            temp = cache->optimals[activity][ressource-i]; 
         }else{
             // calculate the value 
             temp = dyn_max(r, cache, activity+1, ressource-i);
         }
-        int gain = r->values[activity-1][i] + temp;
-        if(optimal < gain){
-            optimal = gain;
+        int gain = r->values[activity-1][i] + temp->optimal_value;
+        if(optimal->optimal_value < gain){
+            optimal->optimal_value = gain;
+            clear_added_optimal_policies(optimal);
+            extend_optimal_policies(optimal, i, temp);
+        } else if (optimal->optimal_value == gain) {
+            extend_optimal_policies(optimal, i, temp);
         }
     }
-    cache->values[activity-1][ressource] = optimal;
+    cache->optimals[activity-1][ressource] = optimal;
     return optimal;
 }

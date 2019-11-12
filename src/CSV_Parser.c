@@ -66,10 +66,17 @@ char *getLine(FILE *file){
     int c,buffer_size=0;
     while(true){
         c = fgetc(file);
-        if(c==EOF || c=='\n')
+        if(c==EOF || c=='\n'){
+            c = '\0';
+            //line[buffer_size-1]=c;
             break;
+        }
         line = realloc(line,++buffer_size);
         line[buffer_size-1]=c;
+    }
+    if(buffer_size>0){
+        line = realloc(line,++buffer_size);
+        line[buffer_size-1]='\0';
     }
     return line;
 }

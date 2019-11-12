@@ -38,7 +38,7 @@ typedef struct Result* Result;
  *  Small container that sets up the cashe buffer for yn_max_with_optimalPolicies() -> returns 
  *  the optimal f* and the Optimal policies
  */
-Result maximize_profite_withOP(Matrix r);
+void maximize_profite_withOP(Matrix r);
 /*
  *  dyn_max() takes activity + ressource + global variable Matrix matrix 
  *  and returns the optimal value for activity machine given a part of the ressource
@@ -62,11 +62,9 @@ void clearPoliciesTable(Result r);
  */
 void freeCache(Result **cache,int rows,int colums);
 
-
 /*
  * copyResult copies result data from result source to result dist
- */
-void copyResult(Result src,Result dist);
+*/
 
 
 

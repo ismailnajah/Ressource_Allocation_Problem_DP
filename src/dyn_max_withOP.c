@@ -1,22 +1,20 @@
 #include "dyn_max_withOP.h"
 
 
-Result maximize_profite_withOP(Matrix r){
+void maximize_profite_withOP(Matrix r){
     //A 2D array that memorized optimal values, cache[activity][ressource] = f*(activity, ressource)
     Result **cache = createCache(r);
-    Result profit = (Result)malloc(sizeof(struct  Result));
+    
     Result result = dyn_max_with_optimalPolicies(r,cache,1,r->ressource);
-    copyResult(result, profit);
+    
+    printf("Optimal value :  %d \n",result->optimalValue);
+    showPolicies(result,r->activities);
 
-    clearPoliciesTable(result);
-    free(result);
     freeCache(cache,r->activities,r->ressource);
-
-    return profit;
 }
 
 Result dyn_max_with_optimalPolicies(Matrix r,Result **cache,int activity,int ressource){
-
+    static int f= 1,c = 0;
     if(activity == r->activities){
         Result result = (Result)malloc(sizeof(struct Result));
         result->optimalValue = r->values[activity-1][ressource];
@@ -41,45 +39,44 @@ Result dyn_max_with_optimalPolicies(Matrix r,Result **cache,int activity,int res
     Result temp;
    
     for(int i=0 ; i<=ressource ; i++) {
+        
         if ( cache[activity][ressource-i] != NULL ){
             // the value already calculated
             temp = cache[activity][ressource-i];
-
+            c++;
         }else{
             // calculate the value 
             temp = dyn_max_with_optimalPolicies(r, cache, activity+1, ressource-i);
-           
+            f++;
         }
 
         int gain = r->values[activity-1][i] + temp->optimalValue;
 
 
-        if(optimal->optimalValue < gain){
-            if(optimal->nPolicies > 0 )
-                clearPoliciesTable(optimal);
-            
-            optimal->nPolicies = temp->nPolicies;
-            optimal->optimalPolicies = (Policy*)malloc(optimal->nPolicies*sizeof(Policy));
-            for(int j=0;j<optimal->nPolicies;j++){
-                optimal->optimalPolicies[j] = (Policy)malloc(sizeof(struct Policy));
-                optimal->optimalPolicies[j]->value = i;
-                optimal->optimalPolicies[j]->next = temp->optimalPolicies[j];
+        if(optimal->optimalValue <= gain){
+            int newSize,start;
+            if (optimal->optimalValue == gain){
+                newSize = optimal->nPolicies + temp->nPolicies;
+                start = optimal->nPolicies;
+            }else{
+                if(optimal->nPolicies > 0 )
+                    clearPoliciesTable(optimal);
+                start = 0;
+                newSize = temp->nPolicies;
             }
-            optimal->optimalValue = gain;
-        }else if(optimal->optimalValue == gain){
-            int start = optimal->nPolicies;
-            optimal->nPolicies += temp->nPolicies;
+            optimal->nPolicies = newSize;
             optimal->optimalPolicies = (Policy*)realloc(optimal->optimalPolicies,optimal->nPolicies*sizeof(Policy));
+            optimal->optimalValue = gain;
             for(int j=start;j<optimal->nPolicies;j++){
-
                 optimal->optimalPolicies[j] = (Policy)malloc(sizeof(struct Policy));
                 optimal->optimalPolicies[j]->value = i;
                 optimal->optimalPolicies[j]->next = temp->optimalPolicies[j-start];
-
             }
         }
     }
-    
+    if(activity==1)
+        printf("recover from Cache  = %d\ncall function dyn_max() = %d\n",c,f);
+
     cache[activity-1][ressource] = optimal;
     return optimal;
 }
@@ -93,19 +90,10 @@ Result **createCache(Matrix r){
 }
 
 void clearPoliciesTable(Result r){
-    if(r->nPolicies > 0){
-        r->nPolicies = 0;
-        for(int i=0;i<r->nPolicies;i++){
-            Policy p = r->optimalPolicies[i];
-            while(p!=NULL){
-                Policy q = p->next;
-                free(p);
-                p = q;
-            }
-        }
-        free(r->optimalPolicies);
-        r->optimalPolicies=NULL;
-    }
+    for(int i=0;i<r->nPolicies;i++)
+        free(r->optimalPolicies[i]);
+    free(r->optimalPolicies);
+    r->optimalPolicies = NULL;
 }
 
 void freeCache(Result **cache,int rows,int columns){
@@ -119,32 +107,6 @@ void freeCache(Result **cache,int rows,int columns){
         free(cache[i]);
     }
     free(cache);
-}
-
-Policy copyPolicy(Policy pol){
-    Policy p = pol;
-    Policy head = (Policy)malloc(sizeof(struct Policy));
-    Policy q = head;
-
-    head->value = p->value;
-    while(p->next!=NULL){
-        q->next = (Policy)malloc(sizeof(struct Policy));
-        q->next->value = p->next->value;
-        q=q->next;
-        p=p->next;
-    }
-    q->next = NULL;
-
-    return head;
-}
-
-void copyResult(Result src,Result dist){
-    dist->nPolicies = src->nPolicies;
-    dist->optimalPolicies = (Policy*)malloc(dist->nPolicies*sizeof(Policy));
-    dist->optimalValue = src->optimalValue;
-    for(int i=0;i<src->nPolicies;i++){
-        dist->optimalPolicies[i] = copyPolicy(src->optimalPolicies[i]);
-    }
 }
 
 void showPolicies(Result r,int activities){

@@ -39,9 +39,9 @@ int main(int argc, char* argv[]){
 
     // Find the optimal f* for r 
     //int optimal = maximize_profite(r);    freeMatrix(r);
-    Result optimal = maximize_profite_withOP(r) ; 
-    printf("Optimal value :  %d \n",optimal->optimalValue);
-    showPolicies(optimal,r->activities);
+    //printf("Optimal value :  %d \n",optimal);
+
+    maximize_profite_withOP(r) ; 
 
     freeMatrix(r);
     //printf("recursivity :  %d \n",total_f);

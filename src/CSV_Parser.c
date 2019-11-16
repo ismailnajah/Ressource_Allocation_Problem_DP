@@ -3,7 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <errno.h>
-#include "CSV_Parser.h"
+#include "Headers/CSV_Parser.h"
+
+
 
 
 Matrix createMatrix(int N,int M){
@@ -30,35 +32,10 @@ Matrix createMatrix(int N,int M){
     return matrix;
 }
 
-Matrix getMatrix(FILE *file){
-    // get N(Rows) and M(Columns) from CSV file 
-    int N,M;
-    char *line,*p;
-    if( (line=getLine(file) ) != NULL){
-        p = strtok(line,CSV_SEP);
-        N = atoi(p);
-        p = strtok(NULL,CSV_SEP);
-        M = atoi(p);
-    }
-    free(line);
-    //----------------------------------------- 
-    //Allocate 2D table with N Rows and M Columns
-    Matrix matrix = createMatrix(N,M+1);
-    //-----------------------------------------
-    //Get Matrix values from CSV file
-    int i=0,j;
-    while( (line=getLine(file) ) != NULL){
-        j=0;
-        p=strtok(line,CSV_SEP);
-        while( p != NULL){
-            matrix->values[i][j++] = atoi(p);
-            p=strtok(NULL,CSV_SEP);
-        }
-        free(line);
-        i++;
-    }
-    //--------------------------------
-    return matrix;
+
+void error(char* msg){
+    printf("Error!#%s\n",msg);
+    exit(EXIT_FAILURE);
 }
 
 char *getLine(FILE *file){
@@ -66,11 +43,9 @@ char *getLine(FILE *file){
     int c,buffer_size=0;
     while(true){
         c = fgetc(file);
-        if(c==EOF || c=='\n'){
-            c = '\0';
-            //line[buffer_size-1]=c;
+        if(c==EOF || c=='\n')
             break;
-        }
+
         line = realloc(line,++buffer_size);
         line[buffer_size-1]=c;
     }
@@ -80,6 +55,47 @@ char *getLine(FILE *file){
     }
     return line;
 }
+
+Matrix getMatrix(FILE *file){
+    Matrix m = (Matrix)malloc(sizeof(struct Matrix));
+    if(m==NULL){
+        perror("Matrix");
+        exit(EXIT_FAILURE);
+    }
+    m->activities = 0;
+    m->ressource = 0;
+    m->values = NULL;
+
+    char *line,*p;
+    while( (line=getLine(file) ) != NULL){
+        m->values = (int**)realloc(m->values,(++m->activities)*sizeof(int*));
+        if(m->values==NULL){
+            perror("getMatrix");
+            exit(EXIT_FAILURE);
+        }
+        m->values[m->activities-1] = NULL;
+        m->ressource = 0;
+        p=strtok(line,CSV_SEP);
+        while( p != NULL){
+            m->values[m->activities-1] = (int*)realloc(m->values[m->activities-1],(++m->ressource)*sizeof(int));
+            if(m->values[m->activities-1]==NULL){
+                perror("getMatrix");
+                exit(EXIT_FAILURE);
+            }
+            m->values[m->activities-1][m->ressource-1] = atoi(p);
+            p=strtok(NULL,CSV_SEP);
+        }
+
+        free(line);
+    }
+    m->ressource--;
+
+    if(m->values==NULL)
+        error("getMatrix: Empty file");
+
+    return m;
+}
+
 
 void freeMatrix(Matrix matrix){
     

@@ -9,7 +9,7 @@ def f(ressources, step=1, s=[]):
 
 # reading a csv file into r[Machines][unites] -> values of reward
 M = []
-with open('test.csv', 'r') as file:
+with open('sorted.csv', 'r') as file:
     file.readline()
     for line in file:
         M.append(   list(  map( int, line.strip().split(',') )  )   )
@@ -19,9 +19,9 @@ R = len(M[0]) - 1
 F=[[0]*(R+1) for _ in range(N-1)]
 F.append(M[-1])
 
+
 RA=[[0]*(R+1) for _ in range(N-1)]
 RA.append([ [i] for i in range(0, R+1)])
-
 
 for i in range(N-2, -1, -1):
     for j in range(0, R+1):

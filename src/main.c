@@ -1,94 +1,91 @@
-#include "dyn_max_withOP.h"
+#include "Headers/dyn_max.h"
+#include <time.h>
 
+#define URL_DEFAULT "g_test.csv"
 
-#define URL_DEFAULT "test.csv"
+//--------------------------------------------------------
+int Menu();
+void generateFile();
 
-
-/*
- *  Small container that sets up the cashe buffer for dyn_max() -> returns the optimal f*
- */
-int maximize_profite(Matrix r);
-/*
- *  dyn_max() takes activity + ressource + global variable Matrix matrix 
- *  and returns the optimal value for activity machine given a part of the ressource
- */
-int dyn_max(Matrix r, Matrix cache, int activity, int ressource);
-
-
-/*
-** TODO DELETE HADCHI
-*/
-int total_f = 0;
-int total_cache_check = 0;
-
-int main(int argc, char* argv[]){
+int main(){
     // Configuring the input file
-    char *url = (argc==2)?argv[1] : URL_DEFAULT ;
-
     // Opening The input file
+    int op = Menu();
     FILE *file ;
-    if ( (file = fopen(url, "r") ) == NULL){
+    if(op == 1){
+        char url[100];
+        printf("file URL : ");
+        scanf("%s",url); 
+        file = fopen(url, "r");
+
+    }else{
+        generateFile();
+        file = fopen(URL_DEFAULT, "r");
+    }
+    printf("\n**************************************************\n");
+    if ( file == NULL){
         perror("File");
         exit(EXIT_FAILURE);
 
     }//~ 
-    
     // Loading the input table into the r(i, j) matrix
     Matrix r = getMatrix(file);  fclose(file);
     printf("## DATA Loaded ##\n");
 
-    // Find the optimal f* for r 
-    //int optimal = maximize_profite(r);    freeMatrix(r);
-    //printf("Optimal value :  %d \n",optimal);
+    clock_t begin = clock();
+    double time = 0.0;
+    
+    dyn_max_recurcive(r) ; 
+    //dyn_max_iterative(r);
 
-    maximize_profite_withOP(r) ; 
+    clock_t end = clock();
+    time += (double)(end-begin)/CLOCKS_PER_SEC;
 
+
+    printf("Temps d'execution est %f seconds\n",time);
     freeMatrix(r);
-    //printf("recursivity :  %d \n",total_f);
-    //printf("cache check :  %d \n",total_cache_check);
 
     return 0;
 }//~ main()
 
 
-int maximize_profite(Matrix r){
-    //A 2D array that memorized optimal values, cache[activity][ressource] = f*(activity, ressource)
-    Matrix cache = createMatrix(r->activities,r->ressource+1);
-    for(int i=0; i < r->activities; ++i) {
-        for(int j=0; j <= r->ressource; ++j) {
-            cache->values[i][j] = -1;
-        }
+int Menu(){
+    printf("##### Ce programme resoudre les problemes d'allocation de ressources ###### \n");
+    printf("il utilise comme input un fichier csv contient les valeurs necessaire pour le calcule\n");
+    printf("  1- Saisire l'URL d'un fichier CSV.\n");
+    printf("  2- Generer un Exemple.\n");
+
+    int op;
+    printf("Votre option : ");
+    scanf("%i",&op);
+    while(op<1 || op>2){
+        printf("ERROR!! choisire 1 ou 2: ");
+        scanf("%i",&op);
     }
-    int profit = dyn_max(r,cache, 1, r->ressource);
-    freeMatrix(cache);
-    return profit;
+    return op;
 }
 
-int dyn_max(Matrix r,Matrix cache,int activity,int ressource){
+void generateFile(){
+    srand(time(NULL));
+    int n,m;
+    printf(" Activities : ");
+    scanf("%d",&n);
+    printf(" Ressources : ");
+    scanf("%d",&m);
 
-    total_f++;
-    if(activity == r->activities){
-        cache->values[activity-1][ressource] = r->values[activity-1][ressource];
-        return r->values[activity-1][ressource];
-    }
-    
-    int optimal=0;
-    int temp;
-    for(int i=0 ; i<=ressource ; i++) {
-        if ( cache->values[activity][ressource-i] != -1  ){
-            // TODO DELETE THIS 
-            total_cache_check++;
-            // the value already calculated
-            temp = cache->values[activity][ressource-i]; 
-        }else{
-            // calculate the value 
-            temp = dyn_max(r, cache, activity+1, ressource-i);
+    FILE *file = fopen(URL_DEFAULT,"w+");
+    int i=1,j=0,x=4;
+    while(i<=n){
+        j=0;
+        while(j<=m){
+            int r = j==0?j:(r+rand()%x);
+            fprintf(file,"%d",r);
+            if(j!=m)
+                fprintf(file,CSV_SEP);
+            j++;
         }
-        int gain = r->values[activity-1][i] + temp;
-        if(optimal < gain){
-            optimal = gain;
-        }
+        fprintf(file,"\n");
+        i++;
     }
-    cache->values[activity-1][ressource] = optimal;
-    return optimal;
+    fclose(file);
 }

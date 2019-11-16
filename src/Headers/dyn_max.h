@@ -33,17 +33,32 @@ struct Result{
 };
 typedef struct Result* Result;
 
+struct List{
+    int size;
+    int *values;
+};
+typedef struct List* List;
+
 
 /*
- *  Small container that sets up the cashe buffer for yn_max_with_optimalPolicies() -> returns 
- *  the optimal f* and the Optimal policies
+ *  Small container that sets up the cashe buffer for dyn_max() ,it outputs
+ *  the optimal value and the Optimal policies
  */
-void maximize_profite_withOP(Matrix r);
+void dyn_max_recurcive(Matrix r);
+
+
 /*
- *  dyn_max() takes activity + ressource + global variable Matrix matrix 
- *  and returns the optimal value for activity machine given a part of the ressource
+ *  Same as dyn_max_recurcive the difference is that this one is more efficient and faster
  */
-Result dyn_max_with_optimalPolicies(Matrix r,Result** cache,int activity,int ressource);
+void dyn_max_iterative(Matrix r);
+
+
+/*
+ *  dyn_max_recurcive() takes activity + ressource + Matrix matrix 
+ *  and returns the optimal value and the Optimal policies for activity machine given a part of the ressource
+ */
+Result dyn_max(Matrix r,Result** cache,int activity,int ressource);
+
 
 /*
  *  this function create a matrix of Result structure to store pointers of calculated results
@@ -62,9 +77,6 @@ void clearPoliciesTable(Result r);
  */
 void freeCache(Result **cache,int rows,int colums);
 
-/*
- * copyResult copies result data from result source to result dist
-*/
 
 
 

@@ -1,7 +1,6 @@
 # reading a csv file into r[Machines][unites] -> values of reward
 r = []
 with open('test.csv', 'r') as f:
-    f.readline()
     for i in f:
         r.append(   list(  map( int, i.split(',') )  )   )
 

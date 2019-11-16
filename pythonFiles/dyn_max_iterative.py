@@ -9,8 +9,7 @@ def f(ressources, step=1, s=[]):
 
 # reading a csv file into r[Machines][unites] -> values of reward
 M = []
-with open('sorted.csv', 'r') as file:
-    file.readline()
+with open('test.csv', 'r') as file:
     for line in file:
         M.append(   list(  map( int, line.strip().split(',') )  )   )
 N = len(M)

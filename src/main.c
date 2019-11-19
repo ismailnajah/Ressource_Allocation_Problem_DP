@@ -12,7 +12,7 @@ int main(){
     // Opening The input file
     int op = Menu();
     FILE *file ;
-    if(op == 1){
+    if(op == 1 || op==2 || op==3){
         char url[100];
         printf("file URL : ");
         scanf("%s",url); 
@@ -22,27 +22,29 @@ int main(){
         generateFile();
         file = fopen(URL_DEFAULT, "r");
     }
+    Matrix r = getMatrix(file);  fclose(file);
     printf("\n**************************************************\n");
     if ( file == NULL){
         perror("File");
         exit(EXIT_FAILURE);
 
     }//~ 
-    // Loading the input table into the r(i, j) matrix
-    Matrix r = getMatrix(file);  fclose(file);
     printf("## DATA Loaded ##\n");
-
     clock_t begin = clock();
     double time = 0.0;
-    
-    dyn_max_recurcive(r) ; 
-    //dyn_max_iterative(r);
-
+    if(op==1){
+        dyn_max_iterative(r);
+    }
+    if(op==2){
+        dyn_max_recurcive(r);
+    }
+    if(op==3){
+        Bruteforce(r);
+    }
     clock_t end = clock();
     time += (double)(end-begin)/CLOCKS_PER_SEC;
 
-
-    printf("Temps d'execution est %f seconds\n",time);
+    printf("Execution time : %f seconds\n",time);
     freeMatrix(r);
 
     return 0;
@@ -50,16 +52,19 @@ int main(){
 
 
 int Menu(){
-    printf("##### Ce programme resoudre les problemes d'allocation de ressources ###### \n");
-    printf("il utilise comme input un fichier csv contient les valeurs necessaire pour le calcule\n");
-    printf("  1- Saisire l'URL d'un fichier CSV.\n");
-    printf("  2- Generer un Exemple.\n");
+    printf("##### This program solves resources allocation problems ###### \n");
+    printf(" it uses as input a csv file contains the gains values\n");
+    printf(" there are three approaches :\n");
+    printf("  1- Dynamic programming : forward approach\n");
+    printf("  2- Dynamic programming : backward approach\n");
+    printf("  3- Brute Force Algorithm\n");
+    printf("  4- Generer un Exemple.\n");
 
     int op;
     printf("Votre option : ");
     scanf("%i",&op);
-    while(op<1 || op>2){
-        printf("ERROR!! choisire 1 ou 2: ");
+    while(op<1 || op>4){
+        printf("ERROR!! choisire 1,2,3 ou 4:");
         scanf("%i",&op);
     }
     return op;

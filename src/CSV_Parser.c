@@ -6,7 +6,11 @@
 #include "Headers/CSV_Parser.h"
 
 
-
+void extendMatrix(Matrix *M){
+    (*M)->activities=(*M)->activities+1;
+    (*M)->values=(int**)realloc((*M)->values,((*M)->activities+1)*sizeof(int*));
+    (*M)->values[(*M)->activities-1]=(int*)calloc((*M)->ressource+1,sizeof(int));
+}
 
 Matrix createMatrix(int N,int M){
     Matrix matrix = (Matrix)malloc(sizeof(struct Matrix));

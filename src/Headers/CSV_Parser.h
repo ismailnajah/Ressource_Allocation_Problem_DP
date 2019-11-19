@@ -16,6 +16,7 @@ typedef struct Matrix* Matrix;
 
 Matrix createMatrix(int,int);
 Matrix getMatrix(FILE*);
+void extendMatrix(Matrix *M);
 void showMatrix(Matrix);
 char *getLine(FILE*);
 

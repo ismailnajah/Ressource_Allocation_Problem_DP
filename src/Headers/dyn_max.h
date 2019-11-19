@@ -53,6 +53,7 @@ void dyn_max_recurcive(Matrix r);
 void dyn_max_iterative(Matrix r);
 
 
+void Bruteforce(Matrix r);
 /*
  *  dyn_max_recurcive() takes activity + ressource + Matrix matrix 
  *  and returns the optimal value and the Optimal policies for activity machine given a part of the ressource
